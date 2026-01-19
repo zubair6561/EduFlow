@@ -1,0 +1,69 @@
+<div class="space-y-6">
+  <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-6">
+    <div class="flex flex-col md:flex-row gap-6">
+      <% if @course.thumbnail.attached? %>
+        <div class="md:w-48">
+          <%= image_tag @course.thumbnail.variant(resize_to_fill: [320, 200]), class: "rounded-xl object-cover w-full h-32 md:h-40" %>
+        </div>
+      <% end %>
+      <div class="flex-1 space-y-3">
+        <div class="flex items-center justify-between">
+          <h1 class="text-3xl font-bold text-slate-900"><%= @course.title %></h1>
+          <span class="text-xs px-3 py-1 rounded-full <%= @course.published? ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700" %>"><%= @course.status.humanize %></span>
+        </div>
+        <p class="text-slate-600 leading-relaxed"><%= @course.description %></p>
+        <div class="flex flex-wrap gap-3 text-sm text-slate-500">
+          <span>Instructor: <span class="font-semibold text-slate-800"><%= @course.instructor.full_name %></span></span>
+          <span><%= pluralize(@course.lessons.count, "lesson") %></span>
+          <span><%= pluralize(@course.enrollments.count, "student") %></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <% if current_user.student? %>
+            <% if @enrollment %>
+              <span class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700">Enrolled</span>
+            <% else %>
+              <%= button_to "Enroll to course", course_enrollments_path(@course), method: :post, class: "px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold shadow" %>
+            <% end %>
+          <% end %>
+          <div class="flex items-center gap-2 text-sm text-slate-600">
+            <span class="font-semibold text-slate-900"><%= @progress_percent %>%</span> complete
+            <div class="h-2 w-32 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-indigo-500" style="width: <%= @progress_percent %>%"></div>
+            </div>
+          </div>
+        </div>
+        <% if current_user.instructor? || current_user.admin? %>
+          <div class="flex items-center gap-3 text-sm">
+            <%= link_to "Edit course", edit_course_path(@course), class: "text-indigo-700 font-semibold" %>
+            <%= button_to "Delete", @course, method: :delete, data: { confirm: "Delete this course?" }, class: "text-rose-600" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <h2 class="text-lg font-semibold text-slate-900">Lessons</h2>
+    <% if current_user.instructor? || current_user.admin? %>
+      <%= link_to "Add lesson", new_course_lesson_path(@course), class: "px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold" %>
+    <% end %>
+  </div>
+
+  <div class="space-y-3">
+    <% @lessons.each do |lesson| %>
+      <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-5 flex items-center justify-between">
+        <div>
+          <p class="text-sm text-slate-500">Lesson <%= lesson.position %></p>
+          <p class="font-semibold text-slate-900"><%= lesson.title %></p>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= link_to "Open", lesson_path(lesson), class: "text-indigo-700 font-semibold text-sm" %>
+          <% if current_user.instructor? || current_user.admin? %>
+            <%= link_to "Edit", edit_lesson_path(lesson), class: "text-slate-600 text-sm" %>
+            <%= button_to "Delete", lesson_path(lesson), method: :delete, data: { confirm: "Delete lesson?" }, class: "text-rose-600 text-sm" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

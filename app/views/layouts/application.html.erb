@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EduFlow</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+
+  <body class="min-h-screen bg-slate-50 text-slate-900" style="font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+    <div class="min-h-screen flex">
+      <% if user_signed_in? %>
+        <aside class="hidden md:flex w-64 bg-white shadow-xl shadow-slate-200/60 border-r border-slate-100 flex-col">
+          <div class="px-6 py-6 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-semibold">EF</div>
+              <div>
+                <p class="text-sm text-slate-500">EduFlow</p>
+                <p class="font-semibold text-slate-900">Learning OS</p>
+              </div>
+            </div>
+          </div>
+          <nav class="flex-1 px-4 py-6 space-y-2">
+            <%= link_to dashboard_path, class: "flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-slate-700 font-medium" do %>
+              <span class="h-2 w-2 rounded-full bg-indigo-500"></span>
+              <span>Dashboard</span>
+            <% end %>
+            <%= link_to courses_path, class: "flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-slate-700 font-medium" do %>
+              <span class="h-2 w-2 rounded-full bg-sky-400"></span>
+              <span>Courses</span>
+            <% end %>
+            <% if current_user.instructor? || current_user.admin? %>
+              <%= link_to new_course_path, class: "flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-slate-700 font-medium" do %>
+                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                <span>Create Course</span>
+              <% end %>
+            <% end %>
+            <% if current_user.student? %>
+              <%= link_to student_dashboard_path, class: "flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-slate-700 font-medium" do %>
+                <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+                <span>My Learning</span>
+              <% end %>
+            <% end %>
+          </nav>
+          <div class="border-t border-slate-100 px-6 py-5">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-semibold">
+                <%= current_user.full_name.first(2).upcase %>
+              </div>
+              <div>
+                <p class="font-semibold text-slate-900"><%= current_user.full_name %></p>
+                <p class="text-xs text-slate-500"><%= current_user.display_role %></p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      <% end %>
+
+      <div class="flex-1 flex flex-col">
+        <header class="w-full bg-white border-b border-slate-100 px-4 md:px-8 py-4 flex items-center justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-[0.25rem] text-slate-400">EduFlow</p>
+            <p class="text-lg font-semibold text-slate-900">EdTech LMS Platform</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <% if user_signed_in? %>
+              <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-medium text-slate-700" %>
+            <% else %>
+              <%= link_to "Log In", new_user_session_path, class: "px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold shadow-md shadow-slate-900/10" %>
+            <% end %>
+          </div>
+        </header>
+
+        <main class="flex-1 px-4 md:px-8 py-8">
+          <% flash.each do |key, value| %>
+            <div class="mb-4 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 shadow-sm">
+              <%= value %>
+            </div>
+          <% end %>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

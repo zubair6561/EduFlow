@@ -1,0 +1,15 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-sm text-slate-500">Lesson <%= @lesson.position %> • <%= @course.title %></p>
+      <h1 class="text-2xl font-bold text-slate-900"><%= @lesson.title %></h1>
+    </div>
+    <% if current_user.student? && current_user.enrolled_courses.include?(@course) %>
+      <%= button_to "Mark as #{(@progress&.completed? ? "Incomplete" : "Complete")}", lesson_progress_path(@lesson, completed: !@progress&.completed?), method: :patch, class: "px-4 py-2 rounded-lg #{(@progress&.completed? ? "bg-amber-500" : "bg-emerald-600")} text-white font-semibold shadow" %>
+    <% end %>
+  </div>
+
+  <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-6 prose prose-slate max-w-none">
+    <%= @lesson.content %>
+  </div>
+</div>
